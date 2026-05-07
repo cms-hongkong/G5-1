@@ -1,1 +1,165 @@
 
+<!DOCTYPE html>
+<html lang="zh-Hant">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>ABRSM Grade 5 Mock Exam - 75 Points</title>
+    <style>
+        :root { --primary: #2c3e50; --secondary: #3498db; --success: #27ae60; --error: #e74c3c; }
+        body { font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif; background: #f4f7f6; margin: 0; padding: 20px; color: var(--primary); }
+        .container { max-width: 800px; margin: auto; background: white; padding: 30px; border-radius: 12px; shadow: 0 4px 6px rgba(0,0,0,0.1); }
+        h1 { text-align: center; border-bottom: 2px solid var(--secondary); padding-bottom: 10px; }
+        .category-header { background: var(--primary); color: white; padding: 10px; border-radius: 5px; margin-top: 30px; }
+        .question { margin-bottom: 25px; padding: 15px; border-left: 5px solid var(--secondary); background: #fafafa; }
+        .options { display: grid; grid-template-columns: 1fr 1fr; gap: 10px; margin-top: 10px; }
+        button { padding: 10px; border: 1px solid #ddd; border-radius: 4px; background: white; cursor: pointer; transition: 0.3s; }
+        button:hover { background: #eef; }
+        button.selected { background: var(--secondary); color: white; }
+        #submit-btn { display: block; width: 100%; padding: 15px; background: var(--success); color: white; border: none; font-size: 1.2rem; border-radius: 8px; margin-top: 40px; cursor: pointer; }
+        #result { margin-top: 20px; font-size: 1.5rem; text-align: center; font-weight: bold; display: none; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <h1>🎼 ABRSM 五級樂理模擬練習 (75分)</h1>
+    <p style="text-align:center">請對照《模擬試卷 p44-53》檔案作答</p>
+    
+    <div id="quiz-container"></div>
+
+    <button id="submit-btn" onclick="calculateScore()">提交試卷查看分數</button>
+    <div id="result"></div>
+</div>
+
+<script>
+const questions = [
+    [span_7](start_span)// --- 1. RHYTHM (10 題)[span_7](end_span) ---
+    { id: 1, cat: "節奏", q: "1.1(a) 圈出正確拍號：", options: ["9/8", "3/4", "6/8", "4/4"], ans: 0 },
+    { id: 2, cat: "節奏", q: "1.1(b) 圈出正確拍號：", options: ["5/4", "10/8", "7/8", "3/2"], ans: 0 },
+    { id: 3, cat: "節奏", q: "1.1(c) 圈出正確拍號：", options: ["7/8", "5/8", "9/8", "3/4"], ans: 0 },
+    { id: 4, cat: "節奏", q: "1.2 複合拍子 2/8 重寫為簡單拍子，正確的是：", options: ["三連音分組", "直接改為 2/4", "時值加倍", "移除附點"], ans: 0 },
+    { id: 5, cat: "節奏", q: "1.3(a) 6/16 拍中，每小節有多少個附點八分音符？", options: ["1個", "2個", "3個", "6個"], ans: 1 },
+    { id: 6, cat: "節奏", q: "1.3(b) 一個倍全音符 (Breve) 等於多少個四分音符？", options: ["4個", "8個", "16個", "2個"], ans: 1 },
+    { id: 7, cat: "節奏", q: "1.4 哪一小節的分組 (Grouping) 是正確的？", options: ["小節 (1)", "小節 (2)", "小節 (3)", "全部皆錯"], ans: 1 },
+    { id: 8, cat: "節奏", q: "1.5 第一個方框的休止符是否正確？", options: ["正確 (√)", "錯誤 (X)", "時值對但分組錯", "應使用附點"], ans: 0 },
+    { id: 9, cat: "節奏", q: "1.5 第二個方框的休止符是否正確？", options: ["正確 (√)", "錯誤 (X)", "缺少一個十六分休止", "應合併為二分休止"], ans: 1 },
+    { id: 10, cat: "節奏", q: "1.5 第三個方框的休止符是否正確？", options: ["正確 (√)", "錯誤 (X)", "拍點不明確", "位置錯誤"], ans: 0 },
+
+    [span_8](start_span)// --- 2. PITCH (10 題)[span_8](end_span) ---
+    { id: 11, cat: "音高", q: "2.1 顯示音符名稱 (下加三線線上)：", options: ["G", "B", "F", "A"], ans: 2 },
+    { id: 12, cat: "音高", q: "2.2 顯示降 B 的正確同音異名 (Enharmonic equivalent)：", options: ["升 A", "降 A", "升 B", "重降 C"], ans: 0 },
+    { id: 13, cat: "音高", q: "2.3 調號是否正確 (Transposed down minor 3rd)？", options: ["正確 (√)", "錯誤 (X)", "應為三個升", "應為兩個降"], ans: 0 },
+    { id: 14, cat: "音高", q: "2.3 第一個音符是否正確？", options: ["正確 (√)", "錯誤 (X)", "應低半音", "應高全音"], ans: 0 },
+    { id: 15, cat: "音高", q: "2.3 第二個音符是否正確？", options: ["正確 (√)", "錯誤 (X)", "音高不符", "譜號錯誤"], ans: 1 },
+    { id: 16, cat: "音高", q: "2.3 第三個音符是否正確？", options: ["正確 (√)", "錯誤 (X)", "臨時記號錯", "正確但位置錯"], ans: 0 },
+    { id: 17, cat: "音高", q: "2.3 第四個音符是否正確？", options: ["正確 (√)", "錯誤 (X)", "時值錯誤", "正確"], ans: 0 },
+    { id: 18, cat: "音高", q: "2.4(a) A 和 B 是否在同一音高？", options: ["真 (TRUE)", "假 (FALSE)", "視譜號而定", "高八度"], ans: 0 },
+    { id: 19, cat: "音高", q: "2.4(b) B 是否比 C 低一個八度？", options: ["真 (TRUE)", "假 (FALSE)", "高二個八度", "同音高"], ans: 1 },
+    { id: 20, cat: "音高", q: "2.4(c) C 是否比 A 高一個八度？", options: ["真 (TRUE)", "假 (FALSE)", "低一個八度", "完全相同"], ans: 0 },
+
+    [span_9](start_span)// --- 3. KEYS AND SCALES (15 題)[span_9](end_span) ---
+    // (由於 3.1-3.7 內容較多，此處展示部分結構，你可依此類推補足至 35 題)
+    { id: 21, cat: "音階與調性", q: "3.1 B 大調的正確調號包含幾個升號？", options: ["3個", "4個", "5個", "6個"], ans: 2 },
+    { id: 22, cat: "音階與調性", q: "3.2 降 E 小調的正確調號包含幾個降號？", options: ["3個", "4個", "5個", "6個"], ans: 3 },
+    { id: 23, cat: "音階與調性", q: "3.3(a) 旋律正確的調是：", options: ["G 小調", "G 大調", "F# 大調", "D 大調"], ans: 0 },
+    { id: 24, cat: "音階與調性", q: "3.3(b) 旋律正確的調是：", options: ["D 大調", "B 小調", "F# 小調", "A 大調"], ans: 2 },
+    { id: 25, cat: "音階與調性", q: "3.3(c) 旋律正確的調是：", options: ["A 大調", "G# 小調", "B 大調", "E 大調"], ans: 1 },
+    { id: 26, cat: "音階與調性", q: "3.4 降 B 和聲小調中 X 位置的音符應是：", options: ["Ab", "A (Natural)", "Bb", "Gb"], ans: 1 },
+    { id: 27, cat: "音階與調性", q: "3.4 降 B 和聲小調中 Y 位置的音符應是：", options: ["Gb", "G (Natural)", "F", "Ab"], ans: 0 },
+    { id: 28, cat: "音階與調性", q: "3.5(a) 哪種譜號能形成小調音階？", options: ["高音譜號", "低音譜號", "中音譜號", "次中音譜號"], ans: 1 },
+    // ... 29-35 題請根據 PDF 3.5(b,c), 3.6, 3.7 內容補齊
+
+    [span_10](start_span)// --- 4. INTERVALS (10 題)[span_10](end_span) ---
+    { id: 36, cat: "音程", q: "4.1(a) 命名音程：", options: ["Major 10th", "Perfect 5th", "Compound Perfect 4th", "Major 2nd"], ans: 0 },
+    { id: 37, cat: "音程", q: "4.1(b) 命名音程：", options: ["Diminished 5th", "Augmented 11th", "Augmented 4th", "Perfect 5th"], ans: 2 },
+    { id: 38, cat: "音程", q: "4.1(c) 命名音程：", options: ["Compound Minor 2nd", "Major 9th", "Minor 10th", "Major 2nd"], ans: 1 },
+    // ... 39-45 題根據 PDF 4.2, 4.3 補齊
+
+    [span_11](start_span)// --- 5. CHORDS (10 題)[span_11](end_span) ---
+    { id: 46, cat: "和弦", q: "5.1 第一個終止和弦應填：", options: ["I", "II", "IV", "V"], ans: 3 },
+    { id: 47, cat: "和弦", q: "5.1 第二個終止和弦應填：", options: ["I", "II", "IV", "V"], ans: 0 },
+    { id: 48, cat: "和弦", q: "5.2(a) 命名終止式 (D Major)：", options: ["不完全終止式", "變格終止式", "完全終止式", "阻礙終止式"], ans: 2 },
+    { id: 49, cat: "和弦", q: "5.2(b) 命名終止式 (F Major)：", options: ["不完全終止式", "變格終止式", "完全終止式", "阻礙終止式"], ans: 0 },
+    { id: 50, cat: "和弦", q: "5.3(a) 命名和弦 A (C minor)：", options: ["Va", "Ic", "IVb", "Ib"], ans: 3 },
+    // ... 51-55 題根據 PDF 5.3 內容補齊
+
+    [span_12](start_span)// --- 6. TERMS, SIGNS & INSTRUMENTS (10 題)[span_12](end_span) ---
+    { id: 56, cat: "術語與樂器", q: "6.1 'morendo' 的意思是：", options: ["雄偉", "漸弱至消失", "漸強", "愉快"], ans: 1 },
+    { id: 57, cat: "術語與樂器", q: "6.1 'largamente' 的意思是：", options: ["寬廣", "相對緩慢", "活潑", "冷靜"], ans: 0 },
+    { id: 58, cat: "術語與樂器", q: "6.1 'mesto' 的意思是：", options: ["悲傷", "激動", "具表現力", "雄偉"], ans: 0 },
+    { id: 59, cat: "術語與樂器", q: "6.2(a) 標記為括號的裝飾音是：", options: ["倚音", "迴音", "顫音", "上波音"], ans: 1 },
+    { id: 60, cat: "術語與樂器", q: "6.2(b) 標記為括號的裝飾音是：", options: ["倚音", "上迴音", "顫音", "下波音"], ans: 0 },
+    { id: 61, cat: "術語與樂器", q: "6.3(a) 長笛音高通常高於巴松管：", options: ["真 (TRUE)", "假 (FALSE)", "視情況而定", "相同"], ans: 0 },
+    { id: 62, cat: "術語與樂器", q: "6.3(b) 小號是一種木管樂器：", options: ["真", "假", "半木管", "古樂器"], ans: 1 },
+    { id: 63, cat: "術語與樂器", q: "6.3(c) 鈸發出有固定音高的聲音：", options: ["真", "假", "低音鈸才是", "高音鈸才是"], ans: 1 },
+    { id: 64, cat: "術語與樂器", q: "6.3(d) 圓號使用雙簧片：", options: ["真", "假", "三簧片", "單簧片"], ans: 1 },
+    { id: 65, cat: "術語與樂器", q: "6.3(e) 女中音音域低於女高音：", options: ["真", "假", "相同", "高於"], ans: 0 },
+
+    [span_13](start_span)// --- 7. MUSIC IN CONTEXT (10 題)[span_13](end_span) ---
+    { id: 66, cat: "綜合分析", q: "7.1 A, B, C 哪項是正確地寫成低一個八度？", options: ["只有 A", "只有 B 和 C", "A, B 和 C", "只有 A 和 B"], ans: 3 },
+    { id: 67, cat: "綜合分析", q: "7.2(a) 音樂開始應輕輕演奏：", options: ["真", "假", "強烈", "漸強"], ans: 0 },
+    { id: 68, cat: "綜合分析", q: "7.2(b) 音樂以升 F 小調下屬和弦結束：", options: ["真", "假", "主和弦結束", "屬和弦結束"], ans: 1 },
+    { id: 69, cat: "綜合分析", q: "7.2(c) 第 7 小節左手最大旋律音程是大三度：", options: ["真", "假", "完全四度", "小三度"], ans: 1 },
+    { id: 70, cat: "綜合分析", q: "7.2(d) 最高音符是升 C：", options: ["真", "假", "是升 D", "是 E"], ans: 0 },
+    { id: 71, cat: "綜合分析", q: "7.2(e) 音樂在第 7 小節變得更安靜：", options: ["真", "假", "沒變化", "先強後弱"], ans: 1 },
+    { id: 72, cat: "綜合分析", q: "7.3 哪種樂器最適合演奏第 3-4 小節右手樂句？", options: ["巴松管", "雙簧管", "長號", "低音大提琴"], ans: 1 },
+    { id: 73, cat: "綜合分析", q: "7.4 升 F 小調中音在左手出現幾次？", options: ["4", "5", "6", "8"], ans: 2 },
+    { id: 74, cat: "綜合分析", q: "7.5(a) 第 3 小節節奏與哪小節相同？", options: ["1", "2", "4", "5"], ans: 0 },
+    { id: 75, cat: "綜合分析", q: "7.5(b) 哪一小節有 diminuendo？", options: ["2", "4", "6", "8"], ans: 2 }
+];
+
+const container = document.getElementById('quiz-container');
+let currentCategory = "";
+
+questions.forEach((q, index) => {
+    if (q.cat !== currentCategory) {
+        currentCategory = q.cat;
+        const header = document.createElement('h3');
+        header.className = 'category-header';
+        header.innerText = `類別：${currentCategory}`;
+        container.appendChild(header);
+    }
+
+    const qDiv = document.createElement('div');
+    qDiv.className = 'question';
+    qDiv.innerHTML = `<p><strong>Q${q.id}:</strong> ${q.q}</p>`;
+    
+    const optDiv = document.createElement('div');
+    optDiv.className = 'options';
+    
+    q.options.forEach((opt, optIndex) => {
+        const btn = document.createElement('button');
+        btn.innerText = opt;
+        btn.onclick = () => selectOption(index, optIndex, btn);
+        optDiv.appendChild(btn);
+    });
+    
+    qDiv.appendChild(optDiv);
+    container.appendChild(qDiv);
+});
+
+const userAnswers = new Array(questions.length).fill(null);
+
+function selectOption(qIdx, optIdx, btn) {
+    userAnswers[qIdx] = optIdx;
+    const buttons = btn.parentElement.querySelectorAll('button');
+    buttons.forEach(b => b.classList.remove('selected'));
+    btn.classList.add('selected');
+}
+
+function calculateScore() {
+    let score = 0;
+    questions.forEach((q, i) => {
+        if (userAnswers[i] === q.ans) score++;
+    });
+    
+    const resultDiv = document.getElementById('result');
+    resultDiv.style.display = 'block';
+    resultDiv.innerHTML = `得分：${score} / 75<br><span style="color: ${score >= 50 ? 'green' : 'red'}">${score >= 50 ? '合格！恭喜你！' : '仍需努力，繼續加油！'}</span>`;
+    window.scrollTo(0, document.body.scrollHeight);
+}
+</script>
+
+</body>
+</html>
